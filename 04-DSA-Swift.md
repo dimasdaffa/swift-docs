@@ -13,21 +13,75 @@ Implementing standard DSA concepts using Swift's Type System.
 ```swift
 var dict: [String: String] = ["id": "123", "role": "admin"]
 dict["name"] = "Dimas" // Add new key
+print(dict)
+// Output: ["id": "123", "role": "admin", "name": "Dimas"]
 ```
 
 ---
 
 ## 2. Generics `<T>`
 
-Generics allow you to write flexible, reusable code that works with any data type.
+Think of Generics as creating a **"fill-in-the-blank" template** for your code — a universal adapter that adjusts to whatever data type you plug into it.
+
+### The Problem: Code Duplication
+
+Without generics, you'd write separate functions for each type:
 
 ```swift
-func swapValues<T>(_ a: inout T, _ b: inout T) {
-    let temp = a
-    a = b
-    b = temp
-}
+func swapTwoInts(_ a: inout Int, _ b: inout Int) { ... }
+func swapTwoStrings(_ a: inout String, _ b: inout String) { ... }
+func swapTwoDoubles(_ a: inout Double, _ b: inout Double) { ... }
 ```
+
+### The Solution: Generic Function
+
+Use a placeholder type `T` instead of a specific type:
+
+```swift
+func swapTwo<T>(_ a: inout T, _ b: inout T) {
+    let tmp = a
+    a = b
+    b = tmp
+}
+
+var x = 5, y = 10
+swapTwo(&x, &y)
+print(x, y)  // Output: 10 5
+
+var a = "Hello", b = "World"
+swapTwo(&a, &b)
+print(a, b)  // Output: World Hello
+```
+
+- **`<T>`** — Declares a placeholder type called `T`
+- **`(_ a: inout T, _ b: inout T)`** — Both parameters must be the same type `T`
+
+> Swift replaces `T` with the actual type (`Int`, `String`, etc.) at compile time.
+
+### Generic Constraints
+
+Sometimes "any type" is too broad. Use constraints to set rules:
+
+```swift
+func minValue<T: Comparable>(_ a: T, _ b: T) -> T { 
+    return a < b ? a : b 
+}
+
+print(minValue(3, 7))      // Output: 3
+print(minValue("b", "a"))  // Output: a
+```
+
+- **`<T: Comparable>`** — Only accepts types that support comparison operators (`<`, `>`)
+
+Without the constraint, `a < b` would fail because Swift doesn't know if `T` can be compared.
+
+### Summary
+
+| Syntax | Meaning |
+| ------ | ------- |
+| `<T>` | Accept any type |
+| `<T: Comparable>` | Accept any type that can be compared |
+| `<T: Equatable>` | Accept any type that can be checked for equality |
 
 ---
 
