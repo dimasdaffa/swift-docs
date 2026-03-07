@@ -168,39 +168,49 @@ obj.name = "Test"
 
 ## 4. Initializers
 
-### Struct (Auto-Synthesized)
+Initializers (`init`) prepare an instance for use by ensuring all stored properties have initial values.
 
-Structs have initializers automatically synthesized from their properties. You only need to define initializers if extra computation is required.
+### Structs: Memberwise Initialization
+
+Structs automatically receive a **memberwise initializer** based on their properties — no code required.
 
 ```swift
-struct User {
+struct User { 
     var name: String
-    var age: Int
+    var age: Int 
 }
 
-let carl = User(name: "Carl", age: 22)
+// Automatically generated:
+let a = User(name: "Morgan", age: 30)
 ```
 
-### Class (Explicit Required)
+> ⚠️ If you write a custom `init` directly inside a Struct, you **lose** the free memberwise initializer. To keep both, place the custom `init` in an `extension`.
 
-Classes must have initializers explicitly defined by the developer.
+### Classes: Designated vs Convenience
+
+Classes do **not** get free memberwise initializers — you must write them manually.
+
+* **Designated:** The primary initializer that **must** set all stored properties.
+* **Convenience:** A shortcut initializer (marked `convenience`) that provides default values and **must** delegate to the designated initializer via `self.init`.
 
 ```swift
-class User {
-    var name: String
-    var age: Int
+class Person {
+    let name: String
+    let age: Int
     
+    // Designated
     init(name: String, age: Int) {
         self.name = name
         self.age = age
     }
-
-    func greet() {
-        print("Hello \(name)")
+    
+    // Convenience (Shortcut)
+    convenience init(name: String) { 
+        self.init(name: name, age: 0) 
     }
 }
 
-let carl = User(name: "Class Carl", age: 22)
+let p = Person(name: "Robin") // age defaults to 0
 ```
 
 ---
@@ -584,11 +594,10 @@ speakers.forEach { $0.speak() }
 | **Polymorphism** | ✅ Full | ⚠️ Limited (via Protocols) |
 | **Inheritance** | ✅ Full | ❌ No (use Protocols + Extensions) |
 
-### Initializer Inheritance
+### Initializer Recap
 
-Classes require all stored properties (including inherited ones) to have initial values. Swift provides two types of class initializers:
+See **Section 4** for full details. Key rules:
 
-- **Designated Initializers** — Primary initializers that fully initialize all properties
-- **Convenience Initializers** — Secondary initializers that call designated initializers
-
-> Structs get auto-synthesized initializers. Classes need explicit initializers due to inheritance complexity.
+- **Structs** get free memberwise initializers (lost if a custom `init` is defined inside the struct body)
+- **Classes** require explicit **Designated** initializers; **Convenience** initializers delegate to them via `self.init`
+- **Failable** (`init?`) and **Throwing** (`init throws`) initializers handle invalid data — covered in `05-Advanced.md`

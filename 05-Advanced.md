@@ -22,6 +22,31 @@ var reference1: Person? = Person(name: "John")
 reference1 = nil // Output: "John is being deinitialized"
 ```
 
+### Deinitializers (`deinit`)
+
+Because classes are managed by ARC, you can use a `deinit` block to run cleanup code exactly when an object's reference count drops to zero, right before it is destroyed.
+
+*Note: `deinit` is only available for Classes, not Structs.*
+
+```swift
+class FileHandle {
+    var filename: String
+    
+    init(filename: String) { 
+        self.filename = filename
+        print("Opened \(filename)") 
+    }
+    
+    // Automatically called when the object is deallocated
+    deinit { 
+        print("Closed \(filename) and freed resources") 
+    }
+}
+
+var file: FileHandle? = FileHandle(filename: "document.txt") // "Opened document.txt"
+file = nil // "Closed document.txt and freed resources"
+```
+
 ---
 
 ## 2. Error Handling
@@ -44,6 +69,35 @@ do {
     print("Network Error!")
 } catch {
     print("Unknown error: \(error)")
+}
+```
+
+### Failable and Throwing Initializers
+
+Use these when object creation might fail due to invalid data.
+
+**Failable (`init?`)**: Returns `nil` if setup fails.
+
+```swift
+struct Email {
+    let value: String
+    init?(_ s: String) { 
+        if s.contains("@") { value = s } else { return nil } 
+    }
+}
+```
+
+**Throwing (`init throws`)**: Throws a specific error if setup fails, giving more context than `nil`.
+
+```swift
+enum InitError: Error { case invalid }
+
+struct Port {
+    let number: Int
+    init(_ n: Int) throws { 
+        guard (1...65535).contains(n) else { throw InitError.invalid }
+        number = n 
+    }
 }
 ```
 
