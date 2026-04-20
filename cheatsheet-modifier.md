@@ -11,7 +11,7 @@ Dalam SwiftUI, **Modifiers** adalah metode yang Anda panggil pada sebuah *View* 
 | | `.frame()` | `(width: 100, height: 100, alignment: .center)` |
 | | `.offset()` | `(x: 10, y: -5)` (Menggeser posisi visual) |
 | | `.zIndex()` | `(1.0)` (Mengatur tumpukan tampilan) |
-| **Text** | `.font()` | `(.largeTitle)`, `(.system(size: 14, weight: .bold))` |
+| **Text** | `.font()` | **Dynamic Type:** `(.largeTitle)`, `(.title)`, `(.title2)`, `(.title3)`, `(.headline)`, `(.body)`, `(.callout)`, `(.subheadline)`, `(.footnote)`, `(.caption)`, `(.caption2)`; **Absolute:** `(.system(size: 24))`; **System design:** `(.system(size: 16, weight: .bold, design: .rounded))`, `(.system(.title, design: .monospaced))`; **Custom:** `(.custom("Poppins-Bold", size: 18))` |
 | | `.bold()` | Tanpa parameter (Membuat teks tebal) |
 | | `.italic()` | Tanpa parameter (Membuat teks miring) |
 | | `.lineLimit()` | `(2)` (Membatasi jumlah baris) |
