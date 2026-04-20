@@ -25,7 +25,7 @@ Dalam SwiftUI, **Modifiers** adalah metode yang Anda panggil pada sebuah *View* 
 | | `.cornerRadius()` | `(12)` (Melengkungkan sudut) |
 | | `.shadow()` | `(color: .black, radius: 5, x: 0, y: 2)` |
 | | `.opacity()` | `(0.5)` (0.0 transparan - 1.0 solid) |
-| | `.clipShape()` | `(Capsule())`, `(Circle())`, `(RoundedRectangle(cornerRadius: 10))` |
+| | `.clipShape()` | `(Capsule())`,`(Rectangle())`,`(Ellipse())`, `(Circle())`, `(RoundedRectangle(cornerRadius: 10))` |
 | **Interaksi** | `.onTapGesture` | `{ // aksi di sini }` |
 | | `.disabled()` | `(true)` (Mematikan fungsi interaksi) |
 
