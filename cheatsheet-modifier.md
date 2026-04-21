@@ -21,6 +21,7 @@ Dalam SwiftUI, **Modifiers** adalah metode yang Anda panggil pada sebuah *View* 
 | | `.lineLimit()` | `(2)` (Membatasi jumlah baris) |
 | | `.multilineTextAlignment()` | `(.center)`, `(.leading)`, `(.trailing)` |
 | **Image** | `.resizable()` | **Wajib** sebelum modifier ukuran lain |
+| | `.aspectRatio()` | `(contentMode: .fit)`, `(contentMode: .fill)`, `(16/9, contentMode: .fit)` |
 | | `.scaledToFit()` | Menjaga rasio agar muat di dalam frame |
 | | `.scaledToFill()` | Menjaga rasio agar memenuhi seluruh frame |
 | | `.renderingMode()` | `(.template)` (Agar warna ikon bisa diubah via foreground) |
@@ -39,6 +40,39 @@ Dalam SwiftUI, **Modifiers** adalah metode yang Anda panggil pada sebuah *View* 
 | **Interaksi** | `.onTapGesture` | `{ // aksi di sini }` |
 | | `.buttonStyle()` | `(.plain)`, `(.bordered)`, `(.borderedProminent)` |
 | | `.disabled()` | `(true)` (Mematikan fungsi interaksi) |
+| **Lifecycle & Async** | `.onAppear()` | `{ loadData() }` |
+| | `.onDisappear()` | `{ stopTimer() }` |
+| | `.task()` | `{ await fetchData() }` |
+| | `.refreshable()` | `{ await reload() }` |
+| **Presentasi** | `.sheet()` | `(isPresented: $showSheet) { SheetView() }` |
+| | `.fullScreenCover()` | `(isPresented: $showFull) { FullView() }` |
+| | `.popover()` | `(isPresented: $showPopover) { PopoverView() }` |
+| | `.alert()` | `("Gagal", isPresented: $showAlert) { Button("OK", role: .cancel) { } }` |
+| | `.confirmationDialog()` | `("Pilih Aksi", isPresented: $showDialog) { Button("Hapus", role: .destructive) { } }` |
+| **Form & Input** | `.textFieldStyle()` | `(.roundedBorder)`, `(.plain)` |
+| | `.keyboardType()` | `(.emailAddress)`, `(.numberPad)` |
+| | `.submitLabel()` | `(.done)`, `(.next)`, `(.search)` |
+| | `.focused()` | `($isFocused)` |
+| | `.textInputAutocapitalization()` | `(.never)`, `(.sentences)` |
+| | `.autocorrectionDisabled()` | `(true)` |
+| **Layout Lanjutan** | `.position()` | `(x: 100, y: 80)` |
+| | `.layoutPriority()` | `(1)` |
+| | `.fixedSize()` | `()`, `(horizontal: true, vertical: false)` |
+| | `.ignoresSafeArea()` | `()`, `(.container, edges: .bottom)` |
+| | `.safeAreaInset()` | `(edge: .bottom) { BottomBarView() }` |
+| **List & Scroll** | `.listStyle()` | `(.plain)`, `(.insetGrouped)` |
+| | `.scrollIndicators()` | `(.hidden)`, `(.visible)` |
+| | `.scrollContentBackground()` | `(.hidden)` |
+| | `.scrollTargetBehavior()` | `(.paging)` |
+| **Animasi & Transformasi** | `.animation(_:value:)` | `(.easeInOut, value: isExpanded)` |
+| | `.transition()` | `(.move(edge: .bottom))`, `(.opacity)` |
+| | `.matchedGeometryEffect()` | `(id: "card", in: namespace)` |
+| | `.rotationEffect()` | `(.degrees(45), anchor: .center)`, `(.radians(.pi), anchor: .topLeading)` |
+| | `.scaleEffect()` | `(1.5)`, `(x: 2, y: 1, anchor: .bottom)` |
+| **Aksesibilitas** | `.accessibilityLabel()` | `("Tombol Simpan")` |
+| | `.accessibilityHint()` | `("Menyimpan perubahan")` |
+| | `.accessibilityHidden()` | `(true)` |
+| | `.dynamicTypeSize()` | `(.small ... .xxxLarge)` |
 
 ---
 
@@ -181,6 +215,117 @@ NavigationStack {
     .navigationTitle("Detail")
     .navigationBarTitleDisplayMode(.inline)
 }
+```
+
+---
+
+### Tambahan Contoh Modifier Penting
+
+**Lifecycle + Refreshable:**
+```swift
+List(items) { item in
+    Text(item.title)
+}
+.task {
+    await viewModel.load()
+}
+.refreshable {
+    await viewModel.reload()
+}
+```
+
+**Sheet + Alert:**
+```swift
+Button("Buka Form") {
+    showSheet = true
+}
+.sheet(isPresented: $showSheet) {
+    FormView()
+}
+.alert("Gagal", isPresented: $showAlert) {
+    Button("OK", role: .cancel) { }
+}
+```
+
+**Input + Keyboard:**
+```swift
+TextField("Email", text: $email)
+    .textFieldStyle(.roundedBorder)
+    .keyboardType(.emailAddress)
+    .textInputAutocapitalization(.never)
+    .autocorrectionDisabled(true)
+    .submitLabel(.done)
+```
+
+**Presentasi Lanjutan (`fullScreenCover`, `confirmationDialog`):**
+```swift
+Button("Hapus Data") {
+    showDialog = true
+}
+.confirmationDialog("Pilih Aksi", isPresented: $showDialog) {
+    Button("Lihat Preview") { showFull = true }
+    Button("Hapus", role: .destructive) { deleteItem() }
+    Button("Batal", role: .cancel) { }
+}
+.fullScreenCover(isPresented: $showFull) {
+    PreviewView()
+}
+```
+
+**Layout Lanjutan (`safeAreaInset`, `ignoresSafeArea`, `layoutPriority`):**
+```swift
+VStack {
+    Text(longText)
+        .lineLimit(1)
+        .layoutPriority(1)
+
+    Spacer()
+}
+.ignoresSafeArea(.container, edges: .bottom)
+.safeAreaInset(edge: .bottom) {
+    BottomBarView()
+}
+```
+
+**List & Scroll (`listStyle`, `scrollIndicators`, `scrollContentBackground`):**
+```swift
+List(items) { item in
+    Text(item.title)
+}
+.listStyle(.insetGrouped)
+.scrollIndicators(.hidden)
+.scrollContentBackground(.hidden)
+```
+
+**Animasi (`animation`, `transition`, `matchedGeometryEffect`):**
+```swift
+if isExpanded {
+    RoundedRectangle(cornerRadius: 20)
+        .matchedGeometryEffect(id: "card", in: namespace)
+        .transition(.move(edge: .bottom).combined(with: .opacity))
+}
+.animation(.easeInOut, value: isExpanded)
+```
+
+**Transformasi (`rotationEffect`, `anchor`):**
+Parameter `anchor` ini menentukan "titik poros" (seperti paku pada jam dinding) yang dipakai sistem untuk memutar view. Ini menggunakan *UnitPoint* persis seperti posisi alignment stack (`.center`, `.topLeading`, `.bottom`, dll).
+
+```swift
+RoundedRectangle(cornerRadius: 15)
+    .fill(.blue)
+    .frame(width: 100, height: 100)
+    // Putar sebesar 45 derajat menggunakan ujung Kanan Bawah sebagai poros
+    .rotationEffect(.degrees(rotation), anchor: .bottomTrailing)
+```
+
+**Aksesibilitas (`accessibilityLabel`, `accessibilityHint`, `dynamicTypeSize`):**
+```swift
+Image(systemName: "square.and.arrow.down")
+    .accessibilityLabel("Simpan")
+    .accessibilityHint("Menyimpan data ke perangkat")
+
+Text("Judul Penting")
+    .dynamicTypeSize(.small ... .xxxLarge)
 ```
 
 ---
