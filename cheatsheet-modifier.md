@@ -21,7 +21,9 @@ Dalam SwiftUI, **Modifiers** adalah metode yang Anda panggil pada sebuah *View* 
 | | `.scaledToFill()` | Menjaga rasio agar memenuhi seluruh frame |
 | | `.renderingMode()` | `(.template)` (Agar warna ikon bisa diubah via foreground) |
 | **Styling** | `.foregroundColor()` | `(.blue)`, `(.themePrimary)` |
+| | `.tint()` | `(.orange)`, `(.themePrimary)` (Warna aksen untuk `Button`, `Toggle`, `Link`, dll.) |
 | | `.background()` | `(Color.red)`, `(Circle())`, `(Material.thin)` |
+| | `.glassEffect()` | `()` (Efek kaca/translucent pada platform yang mendukung) |
 | | `.fill()` | `(Color.blue)`, `(LinearGradient(...))` (Mengisi warna/gradient pada `Shape`) |
 | | `.overlay()` | `(RoundedRectangle(cornerRadius: 12).stroke(.white, lineWidth: 1))` |
 | | `.stroke()` | `(Color.white, lineWidth: 2)` (Untuk garis tepi `Shape`) |
@@ -125,4 +127,29 @@ VStack {
 .background(Color.themeBlack)
 .clipShape(UnevenRoundedRectangle(bottomLeadingRadius: 24, bottomTrailingRadius: 24))
 ```
+
+---
+
+### `.tint()` dan `.glassEffect()`
+
+Gunakan **`.tint()`** untuk mengubah warna aksen kontrol interaktif, dan **`.glassEffect()`** untuk tampilan material kaca pada platform yang mendukung.
+
+**Contoh `.tint()`:**
+```swift
+VStack {
+    Button("Simpan") { }
+    Toggle("Aktif", isOn: .constant(true))
+}
+.tint(.orange)
+```
+
+**Contoh `.glassEffect()`:**
+```swift
+RoundedRectangle(cornerRadius: 24)
+    .fill(.white.opacity(0.15))
+    .frame(height: 140)
+    .glassEffect()
+```
+
+Catatan: `.glassEffect()` bersifat version/platform dependent, jadi jika target deployment Anda lebih lama, gunakan pengecekan ketersediaan API (`#available`) atau fallback ke `.background(.ultraThinMaterial)`.
 
