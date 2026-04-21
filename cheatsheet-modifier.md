@@ -11,9 +11,10 @@ Dalam SwiftUI, **Modifiers** adalah metode yang Anda panggil pada sebuah *View* 
 | | `.frame()` | `(width: 100, height: 100, alignment: .center)` |
 | | `.offset()` | `(x: 10, y: -5)` (Menggeser posisi visual) |
 | | `.zIndex()` | `(1.0)` (Mengatur tumpukan tampilan) |
-| **Navigation** | `.navigationTitle()` | `("Beranda")` |
+| **Navigation & Toolbar**| `.navigationTitle()` | `("Beranda")` |
 | | `.navigationBarTitleDisplayMode()` | `(.inline)`, `(.large)` |
 | | `.toolbar()` | `{ ToolbarItem(placement: .topBarTrailing) { Button("Edit") { } } }` |
+| | `.toolbarBackground()` | `(.visible, for: .navigationBar)` |
 | | `.navigationDestination()` | `(for: Item.self) { item in DetailView(item: item) }` |
 | **Text** | `.font()` | **Dynamic Type:** `(.largeTitle)`, `(.title)`, `(.title2)`, `(.title3)`, `(.headline)`, `(.body)`, `(.callout)`, `(.subheadline)`, `(.footnote)`, `(.caption)`, `(.caption2)`; **Absolute:** `(.system(size: 24))`; **System design:** `(.system(size: 16, weight: .bold, design: .rounded))`, `(.system(.title, design: .monospaced))`; **Custom:** `(.custom("Poppins-Bold", size: 18))` |
 | | `.bold()` | Tanpa parameter (Membuat teks tebal) |
@@ -198,7 +199,65 @@ Catatan: `.glassEffect()` bersifat version/platform dependent, jadi jika target 
 
 `navigationTitle` dipakai di dalam `NavigationStack` untuk judul halaman, sedangkan `buttonStyle(.plain)` membuat tombol tampil tanpa gaya default (tidak seperti tombol biru standar iOS).
 
-**Contoh Penggunaan:**
+### Posisi ToolbarItem & Praktik Terbaik (Semantic Placements)
+
+Saat Anda menggunakan modifier `.toolbar()`, Anda menyusun satu atau banyak `ToolbarItem`. SwiftUI punya dua cara menempatkan tombol: **Penempatan Eksplisit (Kiri/Kanan)** dan **Penempatan Semantik (Makna Aksi)**.
+
+**Sangat disarankan** memakai opsi *Semantik* (misal `.confirmationAction`). SwiftUI akan secara otomatis menyesuaikan tampilan tombol tersebut di semua perangkat lunak Apple (misal: tombol konfirmasi akan otomatis ditebalkan di iOS, dan ditaruh di posisi yang disepakati oleh sistem operasi terkait).
+
+| Placement (Posisi) | Penjelasan / Kegunaan |
+| :--- | :--- |
+| **`.automatic`** | Nilai default. Biasanya tombol ditaruh di pojok kanan atas Bar Navigasi. |
+| **`.primaryAction`** | Aksi utama halaman tersebut (contoh: tombol "+" atau "Edit"). |
+| **`.topBarLeading` / `.topBarTrailing`** | (Eksplisit) Memaksa isi ditaruh di pojok kiri / kanan navigasi atas layar. *(Ingat: Dulu ditulis `navigationBarLeading` dan `navigationBarTrailing`, namun ini perlahan-lahan di-*deprecate*)*. |
+| **`.bottomBar`** | (Eksplisit) Memaksa isi ditaruh di bar bagian bawah (hanya di iOS/iPadOS). |
+| **`.principal`** | Menaruh item persis di bagian **tengah** *NavigationBar* (Seringnya untuk mengganti teks Judul biasa menjadi *custom view*/ikon kecil). |
+| **`.keyboard`** | Memasang komponen di atas *keyboard virtual* (berguna untuk tombol "Done" saat mengisi *Textfield*). |
+| **`.confirmationAction`** | (Semantik) Tombol konfirmasi ("Save" / "Done") di halaman *Modal/Sheet*. Biasanya font **ditebalkan** otomatis. |
+| **`.cancellationAction`** | (Semantik) Tombol batal ("Cancel" / "Dismiss") di halaman *Modal/Sheet*. Biasanya diletakkan di sisi kiri atas. |
+| **`.destructiveAction`** | (Semantik) Tombol bahaya ("Delete" / "Remove"). Biasanya ditekankan dengan *tint* warna merah. |
+
+**Contoh 1 (Toolbar Semantik pada halaman Modals/Sheets):**
+```swift
+NavigationStack {
+    Form {
+        TextField("Nama", text: .constant(""))
+    }
+    .navigationTitle("Edit Profil")
+    .navigationBarTitleDisplayMode(.inline)
+    .toolbar {
+        ToolbarItem(placement: .cancellationAction) {
+            Button("Batal", role: .cancel) { dismiss() }
+        }
+        ToolbarItem(placement: .confirmationAction) {
+            Button("Simpan") { saveProfile() }
+        }
+    }
+}
+```
+
+**Contoh 2 (Menaruh Judul/Ikon Khusus di Tengah & Tombol di atas Keyboard):**
+```swift
+NavigationStack {
+    TextField("Ketik sesuatu...", text: .constant(""))
+        .padding()
+        .toolbar {
+            // Mengubah Judul bagian tengah dengan logo Apple
+            ToolbarItem(placement: .principal) {
+                Image(systemName: "apple.logo")
+                    .font(.title2)
+            }
+            // Tombol "Tutup Keyboard" (hanya muncul saat keyboard aktif)
+            ToolbarItem(placement: .keyboard) {
+                Button("Tutup Keyboard") { 
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                }
+            }
+        }
+}
+```
+
+**Contoh Penggunaan Dasar (.buttonStyle):**
 ```swift
 NavigationStack {
     VStack(spacing: 16) {
