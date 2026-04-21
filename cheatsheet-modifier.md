@@ -11,6 +11,10 @@ Dalam SwiftUI, **Modifiers** adalah metode yang Anda panggil pada sebuah *View* 
 | | `.frame()` | `(width: 100, height: 100, alignment: .center)` |
 | | `.offset()` | `(x: 10, y: -5)` (Menggeser posisi visual) |
 | | `.zIndex()` | `(1.0)` (Mengatur tumpukan tampilan) |
+| **Navigation** | `.navigationTitle()` | `("Beranda")` |
+| | `.navigationBarTitleDisplayMode()` | `(.inline)`, `(.large)` |
+| | `.toolbar()` | `{ ToolbarItem(placement: .topBarTrailing) { Button("Edit") { } } }` |
+| | `.navigationDestination()` | `(for: Item.self) { item in DetailView(item: item) }` |
 | **Text** | `.font()` | **Dynamic Type:** `(.largeTitle)`, `(.title)`, `(.title2)`, `(.title3)`, `(.headline)`, `(.body)`, `(.callout)`, `(.subheadline)`, `(.footnote)`, `(.caption)`, `(.caption2)`; **Absolute:** `(.system(size: 24))`; **System design:** `(.system(size: 16, weight: .bold, design: .rounded))`, `(.system(.title, design: .monospaced))`; **Custom:** `(.custom("Poppins-Bold", size: 18))` |
 | | `.bold()` | Tanpa parameter (Membuat teks tebal) |
 | | `.italic()` | Tanpa parameter (Membuat teks miring) |
@@ -33,6 +37,7 @@ Dalam SwiftUI, **Modifiers** adalah metode yang Anda panggil pada sebuah *View* 
 | | `.opacity()` | `(0.5)` (0.0 transparan - 1.0 solid) |
 | | `.clipShape()` | `(Capsule())`,`(Rectangle())`,`(Ellipse())`, `(Circle())`, `(RoundedRectangle(cornerRadius: 10))`, `(UnevenRoundedRectangle(bottomLeadingRadius: 24,topLeadingRadius: 24,topTrailingRadius: 24, bottomTrailingRadius: 24))` |
 | **Interaksi** | `.onTapGesture` | `{ // aksi di sini }` |
+| | `.buttonStyle()` | `(.plain)`, `(.bordered)`, `(.borderedProminent)` |
 | | `.disabled()` | `(true)` (Mematikan fungsi interaksi) |
 
 ---
@@ -84,7 +89,7 @@ VStack(spacing: -24) {
 
 ---
 
-### Ketebalan Huruf (Font Weight)
+### Font Weight
 Gunakan modifier **`.fontWeight()`** untuk mengatur ketebalan teks. Berikut adalah daftar lengkap parameternya, diurutkan dari yang paling tipis hingga paling tebal:
 
 | Kategori | Modifier | Parameter & Efek Visual |
@@ -153,3 +158,29 @@ RoundedRectangle(cornerRadius: 24)
 
 Catatan: `.glassEffect()` bersifat version/platform dependent, jadi jika target deployment Anda lebih lama, gunakan pengecekan ketersediaan API (`#available`) atau fallback ke `.background(.ultraThinMaterial)`.
 
+---
+
+### `.navigationTitle` dan `.buttonStyle(.plain)`
+
+`navigationTitle` dipakai di dalam `NavigationStack` untuk judul halaman, sedangkan `buttonStyle(.plain)` membuat tombol tampil tanpa gaya default (tidak seperti tombol biru standar iOS).
+
+**Contoh Penggunaan:**
+```swift
+NavigationStack {
+    VStack(spacing: 16) {
+        Button {
+            // aksi
+        } label: {
+            HStack {
+                Image(systemName: "chevron.left")
+                Text("Kembali")
+            }
+        }
+        .buttonStyle(.plain)
+    }
+    .navigationTitle("Detail")
+    .navigationBarTitleDisplayMode(.inline)
+}
+```
+
+---
