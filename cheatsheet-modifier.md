@@ -39,6 +39,7 @@ Dalam SwiftUI, **Modifiers** adalah metode yang Anda panggil pada sebuah *View* 
 | | `.opacity()` | `(0.5)` (0.0 transparan - 1.0 solid) |
 | | `.clipShape()` | `(Capsule())`,`(Rectangle())`,`(Ellipse())`, `(Circle())`, `(RoundedRectangle(cornerRadius: 10))`, `(UnevenRoundedRectangle(bottomLeadingRadius: 24,topLeadingRadius: 24,topTrailingRadius: 24, bottomTrailingRadius: 24))` |
 | **Interaksi** | `.onTapGesture` | `{ // aksi di sini }` |
+| | `.contentShape()` | `(Rectangle())` (Area kosong/transparan ikut bisa diklik) |
 | | `.buttonStyle()` | `(.plain)`, `(.bordered)`, `(.borderedProminent)` |
 | | `.disabled()` | `(true)` (Mematikan fungsi interaksi) |
 | **Lifecycle & Async** | `.onAppear()` | `{ loadData() }` |
